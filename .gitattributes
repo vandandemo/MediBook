@@ -1,0 +1,14 @@
+# Set text files to always use LF
+* text=auto eol=lf
+
+# File type-specific diff settings
+*.blade.php diff=html
+*.css diff=css
+*.html diff=html
+*.md diff=markdown
+*.php diff=php
+
+# Ignore files for export
+/.github export-ignore
+CHANGELOG.md export-ignore
+.styleci.yml export-ignore
