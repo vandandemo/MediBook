@@ -33,22 +33,26 @@ RUN composer install --no-dev --optimize-autoloader
 RUN npm install
 RUN npm run build
 
-# Set permissions for storage and bootstrap/cache
+# Set proper permissions
+RUN chown -R www-data:www-data /var/www/html
+RUN chmod -R 755 /var/www/html
 RUN chmod -R 777 storage bootstrap/cache
 
 # Configure Nginx
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Create directory for PHP-FPM socket
-RUN mkdir -p /var/run/php
+# Remove default nginx welcome page
+RUN rm /var/www/html/index.nginx-debian.html
 
 # Expose port 80
 EXPOSE 80
 
 # Create startup script
 RUN echo '#!/bin/bash\n\
-service nginx start\n\
-php-fpm' > /start.sh && chmod +x /start.sh
+# Start PHP-FPM\n\
+php-fpm &\n\
+# Start Nginx\n\
+nginx -g "daemon off;"' > /start.sh && chmod +x /start.sh
 
 # Start Nginx & PHP-FPM
 CMD ["/start.sh"]
