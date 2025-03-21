@@ -45,20 +45,32 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 # Remove default nginx welcome page
 RUN rm /var/www/html/index.nginx-debian.html
 
-# Laravel setup commands
-RUN php artisan key:generate --force
-RUN php artisan storage:link --force
-RUN php artisan config:clear && php artisan config:cache
-RUN php artisan route:clear && php artisan route:cache
-RUN php artisan view:clear && php artisan view:cache
-
 # Expose port 80
 EXPOSE 80
 
 # Create startup script
 RUN echo '#!/bin/bash\n\
+# Copy .env.example to .env if .env does not exist\n\
+if [ ! -f .env ]; then\n\
+    cp .env.example .env\n\
+fi\n\
+\n\
+# Generate application key if not exists\n\
+if [ ! -f .env ]; then\n\
+    php artisan key:generate --force\n\
+fi\n\
+\n\
+# Create storage link\n\
+php artisan storage:link --force\n\
+\n\
+# Clear and cache config\n\
+php artisan config:clear && php artisan config:cache\n\
+php artisan route:clear && php artisan route:cache\n\
+php artisan view:clear && php artisan view:cache\n\
+\n\
 # Start PHP-FPM\n\
 php-fpm &\n\
+\n\
 # Start Nginx\n\
 nginx -g "daemon off;"' > /start.sh && chmod +x /start.sh
 
