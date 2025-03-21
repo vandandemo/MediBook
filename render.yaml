@@ -5,6 +5,7 @@ services:
     region: oregon
     plan: free
     dockerfilePath: ./Dockerfile
+    healthCheckPath: /
     envVars:
       - key: APP_ENV
         value: production
@@ -12,15 +13,45 @@ services:
         value: false
       - key: APP_KEY
         sync: false
+      - key: APP_URL
+        sync: false
       - key: DB_CONNECTION
         value: mysql
       - key: DB_HOST
-        value: your-database-host
+        fromDatabase:
+          name: laravel-db
+          property: host
       - key: DB_PORT
-        value: 3306
+        fromDatabase:
+          name: laravel-db
+          property: port
       - key: DB_DATABASE
-        value: your-database-name
+        fromDatabase:
+          name: laravel-db
+          property: database
       - key: DB_USERNAME
-        value: your-database-username
+        fromDatabase:
+          name: laravel-db
+          property: username
       - key: DB_PASSWORD
-        value: your-database-password
+        fromDatabase:
+          name: laravel-db
+          property: password
+      - key: CACHE_DRIVER
+        value: file
+      - key: SESSION_DRIVER
+        value: file
+      - key: QUEUE_CONNECTION
+        value: sync
+      - key: FILESYSTEM_DISK
+        value: public
+
+  - type: pserv
+    name: laravel-db
+    env: docker
+    region: oregon
+    plan: free
+    disk:
+      name: data
+      mountPath: /var/lib/mysql
+      sizeGB: 10
