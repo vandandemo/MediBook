@@ -38,6 +38,7 @@ RUN chown -R www-data:www-data /var/www/html
 RUN chmod -R 755 /var/www/html
 RUN chmod -R 777 storage bootstrap/cache
 RUN chmod -R 777 public
+RUN chmod -R 777 vendor
 
 # Configure Nginx
 COPY nginx.conf /etc/nginx/conf.d/default.conf
@@ -67,6 +68,11 @@ php artisan storage:link --force\n\
 php artisan config:clear && php artisan config:cache\n\
 php artisan route:clear && php artisan route:cache\n\
 php artisan view:clear && php artisan view:cache\n\
+\n\
+# Set proper permissions\n\
+chown -R www-data:www-data /var/www/html\n\
+chmod -R 755 /var/www/html\n\
+chmod -R 777 storage bootstrap/cache public vendor\n\
 \n\
 # Start PHP-FPM\n\
 php-fpm &\n\
