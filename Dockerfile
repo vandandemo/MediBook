@@ -75,7 +75,7 @@ chmod -R 755 /var/www/html\n\
 chmod -R 777 storage bootstrap/cache public vendor\n\
 \n\
 # Start PHP-FPM\n\
-php-fpm &\n\
+php-fpm -D\n\
 \n\
 # Start Nginx\n\
 nginx -g "daemon off;"' > /start.sh && chmod +x /start.sh
