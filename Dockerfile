@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     zip \
     git \
+    nginx \
     && docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd
 
 # Install Composer
@@ -35,8 +36,19 @@ RUN npm run build
 # Set permissions for storage and bootstrap/cache
 RUN chmod -R 777 storage bootstrap/cache
 
-# Expose port 9000
-EXPOSE 9000
+# Configure Nginx
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Start PHP-FPM
-CMD ["php-fpm"]
+# Create directory for PHP-FPM socket
+RUN mkdir -p /var/run/php
+
+# Expose port 80
+EXPOSE 80
+
+# Create startup script
+RUN echo '#!/bin/bash\n\
+service nginx start\n\
+php-fpm' > /start.sh && chmod +x /start.sh
+
+# Start Nginx & PHP-FPM
+CMD ["/start.sh"]
