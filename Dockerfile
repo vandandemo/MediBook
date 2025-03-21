@@ -43,8 +43,9 @@ RUN chmod -R 777 vendor
 # Configure Nginx
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Remove default nginx welcome page
-RUN rm /var/www/html/index.nginx-debian.html
+# Remove default nginx welcome page and default config
+RUN rm -f /var/www/html/index.nginx-debian.html
+RUN rm -f /etc/nginx/sites-enabled/default
 
 # Expose port 80
 EXPOSE 80
